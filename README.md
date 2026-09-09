@@ -1,5 +1,36 @@
 # Documentación Completa de API Endpoints - Sistema LuxeRide
 
+## Configuración
+
+La aplicación ya no lleva credenciales embebidas: se leen desde variables de entorno. Antes de arrancar, define:
+
+| Variable | Descripción | Por defecto |
+|---|---|---|
+| `DB_URL` | URL JDBC de la base de datos MySQL | `jdbc:mysql://localhost:3306/mcastillol14_taxi` |
+| `DB_USERNAME` | Usuario de la base de datos | `alumno` |
+| `DB_PASSWORD` | Contraseña de la base de datos | *(obligatoria, sin valor por defecto)* |
+| `MAIL_HOST` | Host SMTP | `smtp.gmail.com` |
+| `MAIL_PORT` | Puerto SMTP | `587` |
+| `MAIL_USERNAME` | Usuario/correo SMTP | *(obligatoria)* |
+| `MAIL_PASSWORD` | Contraseña de aplicación SMTP | *(obligatoria)* |
+| `JWT_SECRET` | Clave de firma de los JWT (Base64, ≥256 bits) | *(obligatoria)* |
+
+Ejemplo de arranque local:
+```bash
+export DB_PASSWORD=tu_password
+export MAIL_USERNAME=tu_correo@gmail.com
+export MAIL_PASSWORD=tu_password_de_aplicacion
+export JWT_SECRET=tu_clave_base64
+./mvnw spring-boot:run
+```
+
+Puedes generar una clave JWT válida con:
+```bash
+openssl rand -base64 64
+```
+
+> ⚠️ Este repositorio tuvo credenciales reales committeadas (contraseña de la base de datos, contraseña de aplicación de Gmail y la clave de firma JWT), tanto en `application.properties` como en `target/` (artefactos de compilación que no debían estar en git). Se han sacado del código, pero **quitarlas del código no invalida credenciales que ya quedaron expuestas en el historial de git público** — rota manualmente: la contraseña de la base de datos MySQL, la contraseña de aplicación de Gmail, y usa una `JWT_SECRET` nueva (esto invalidará las sesiones/tokens ya emitidos, lo cual es deseable).
+
 ## Tabla de Contenidos
 1. [Autenticación y Autorización](#autenticación-y-autorización)
 2. [Endpoints Públicos](#endpoints-públicos)
