@@ -2,7 +2,7 @@ package com.luxeride.taxistfg.Service;
 
 import com.luxeride.taxistfg.Model.Licencia;
 import com.luxeride.taxistfg.Repository.LicenciaRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +29,7 @@ public class LicenciaService {
         licenciaRepository.save(licenciaCreada);
     }
 
+    @Transactional(readOnly = true)
     public Page<Licencia> obtenerLicenciasPorFiltro(Pageable pageable, String numero) {
         if (numero != null && !numero.isEmpty()) {
             return licenciaRepository.buscarLicenciasPorNumero(numero, pageable);

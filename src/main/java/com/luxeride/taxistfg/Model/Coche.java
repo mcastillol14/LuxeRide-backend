@@ -37,11 +37,9 @@ public class Coche {
     @Column(nullable = false)
     private boolean disponible = false;
 
-    // Nuevo campo para marcar si el coche está en servicio.
     @Column(nullable = false)
     private boolean enServicio = false;
 
-    // Relación con los usuarios que pueden usar este coche.
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "coches")
     @JsonIgnoreProperties({"coches", "viajesComoCliente", "viajesComoTaxista"})
     private Set<Usuario> usuarios;
@@ -49,7 +47,7 @@ public class Coche {
     @OneToMany(mappedBy = "coche")
     private Set<Viaje> viajes;
 
-    // Vincula el coche con un taxista que está usando el coche en servicio
+    // taxista que esta usando el coche ahora mismo, distinto de los usuarios asignados en general (usuarios)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taxista_id_servicio")
     private Usuario taxistaEnServicio;

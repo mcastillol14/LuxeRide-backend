@@ -55,6 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("Invalid token");
             }
 
+            // sin token o con token invalido dejamos pasar la request sin auth seteada,
+            // spring security ya la rechaza mas abajo si la ruta lo requiere (no cortamos aqui)
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             logger.error("Error in JwtAuthenticationFilter: ", e);

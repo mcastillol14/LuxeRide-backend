@@ -132,6 +132,7 @@ public class ControladorUsuario {
             boolean esAdmin = auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ROL_ADMIN"));
 
+            // solo el dueño del viaje o un admin pueden bajar este pdf, si no es admin comparamos con el id autenticado (evita IDOR cambiando el id en la url)
             if (!esAdmin) {
                 String email = (String) auth.getPrincipal();
                 Usuario usuarioAutenticado = usuarioRepository.findByEmail(email)
@@ -141,24 +142,19 @@ public class ControladorUsuario {
                 }
             }
 
-            // Obtener todos los viajes del cliente ordenados por ID descendente
-            List<Viaje> viajes = viajeRepository.findViajesCliente(idCliente);
+            Optional<Viaje> viajeOpt = viajeRepository.findFirstByClienteIdOrderByIdDesc(idCliente);
 
-            if (viajes.isEmpty()) {
+            if (viajeOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
 
-            // Tomar solo el primer viaje (el más reciente)
-            Viaje viaje = viajes.get(0);
+            Viaje viaje = viajeOpt.get();
 
-            // Generar el PDF
             byte[] pdfBytes = pdfService.generarPdfViaje(viaje);
 
-            // Configurar las cabeceras de la respuesta
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
 
-            // Nombre del archivo: ticket_viaje_[fecha].pdf
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
             String fechaFormateada = viaje.getHoraLlegada().format(formatter);
             String filename = "ticket_viaje_" + fechaFormateada + ".pdf";

@@ -32,12 +32,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String apellidos;
 
-    // Columna dni: DNI único para cada usuario, con validación personalizada
     @Column(nullable = false, unique = true)
     @DniValido(message = "Por favor, proporcione un DNI válido")
     private String dni;
 
-    // Columna email: Dirección de correo electrónico única, con validación de formato de email
     @Column(nullable = false, unique = true)
     @Email(message = "Por favor, proporcione una dirección de correo electrónico válida")
     private String email;
@@ -52,8 +50,6 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private boolean accountNonLocked = true;
 
-    // Relación ManyToMany entre Usuario y Coche
-    // La tabla intermedia usuario_coche maneja la relación entre estos dos
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "usuario_coche",
             joinColumns = @JoinColumn(name = "usuario_id"),
@@ -61,50 +57,39 @@ public class Usuario implements UserDetails {
     @JsonIgnoreProperties({"usuarios", "licencia", "viajes"})
     private Set<Coche> coches;
 
-    // Relación OneToMany entre Usuario y Viaje como cliente
-    // Un usuario puede tener varios viajes como cliente
     @OneToMany(mappedBy = "cliente")
     private Set<Viaje> viajesComoCliente;
 
-    // Relación OneToMany entre Usuario y Viaje como taxista
-    // Un usuario puede tener varios viajes como taxista
     @OneToMany(mappedBy = "taxista")
     private Set<Viaje> viajesComoTaxista;
 
-    // Implementación de los métodos de UserDetails para la autenticación
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Asigna el rol del usuario como una autoridad
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.rol.name()));
     }
 
     @Override
     public String getUsername() {
-        // El nombre de usuario es el correo electrónico
         return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        // La cuenta nunca expira
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // Indica si la cuenta está bloqueada o no
         return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Las credenciales nunca expiran
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // Indica si la cuenta está habilitada
         return true;
     }
 }

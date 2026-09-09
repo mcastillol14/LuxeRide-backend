@@ -24,17 +24,9 @@ public class Servicio {
     @Column(nullable = false)
     private String descripcion;
 
-    // Uso de BigDecimal para manejar precisión en valores monetarios
-    // precision = 10, scale = 2 significa que el precio puede tener hasta 10
-    // dígitos,
-    // con 2 dígitos después del punto decimal
     @Column(name = "precio_por_km", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioPorKm;
 
-    // Relación OneToMany: Un servicio puede tener múltiples viajes asociados
-    // mappedBy = "servicio" indica que la relación está mapeada en la clase Viaje
-    // Es decir, la tabla de viajes tendrá una columna que hace referencia a este
-    // servicio
     @OneToMany(mappedBy = "servicio")
     private Set<Viaje> viajes;
 }

@@ -32,20 +32,16 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Permitir acceso a rutas públicas
                         .requestMatchers("/api/usuarios/registrar", "/api/usuarios/iniciar",
                                 "/api/admin/login")
                         .permitAll()
 
-                        // Permitir acceso a info para clientes, admins y taxistas
                         .requestMatchers("/api/usuarios/info","/api/admin/allServicios")
                         .hasAnyAuthority("ROLE_ROL_CLIENTE", "ROLE_ROL_ADMIN", "ROLE_ROL_TAXISTA")
 
-                        // Permitir acceso a admin solo para admins
                         .requestMatchers("/api/admin/**")
                         .hasAuthority("ROLE_ROL_ADMIN")
 
-                        // Permitir acceso a los taxistas a estas rutas
                         .requestMatchers("/api/taxista/**")
                         .hasAnyAuthority("ROLE_ROL_TAXISTA", "ROLE_ROL_ADMIN")
 
@@ -62,6 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // origins abiertos a proposito: no usamos cookies de sesion, todo va con bearer token en el header
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));

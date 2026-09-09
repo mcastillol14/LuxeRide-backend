@@ -2,7 +2,7 @@ package com.luxeride.taxistfg.Service;
 
 import com.luxeride.taxistfg.Model.*;
 import com.luxeride.taxistfg.Repository.CocheRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -111,6 +111,7 @@ public class CocheService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Page<CocheDTO> listarCochesDTO(Pageable pageable, String matricula) {
         Page<Coche> coches;
         if (matricula != null && !matricula.isEmpty()) {
@@ -121,10 +122,12 @@ public class CocheService {
         return pageCochesDTO(coches);
     }
 
+    @Transactional(readOnly = true)
     public List<Coche> listarCochesDisponibles() {
         return cocheRepository.findByDisponibleTrue();
     }
 
+    @Transactional(readOnly = true)
     public List<Coche> listarCochesNoDisponibles() {
         return cocheRepository.findByDisponibleFalse();
     }
@@ -180,7 +183,7 @@ public class CocheService {
         licenciaRepository.save(licencia);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<UsuarioDTO> obtenerUsuariosDeCoche(Integer cocheId) {
         Coche coche = getCocheById(cocheId);
         return coche.getUsuarios().stream()
@@ -210,7 +213,6 @@ public class CocheService {
         coche.setDisponible(false);
         cocheRepository.save(coche);
 
-        // Devolver un Map con los campos del taxista
         Map<String, Object> response = new HashMap<>();
         response.put("id", taxista.getId());
         response.put("nombre", taxista.getNombre());
@@ -236,6 +238,7 @@ public class CocheService {
         cocheRepository.save(coche);
     }
 
+    @Transactional(readOnly = true)
     public List<Coche> obtenerCochesDisponiblesPorTaxista(Integer taxistaId) {
         Usuario taxista = getUsuarioById(taxistaId);
 
@@ -261,16 +264,16 @@ public class CocheService {
                 .orElseThrow(() -> new IllegalArgumentException("La licencia con el ID proporcionado no existe"));
     }
 
+    @Transactional(readOnly = true)
     public List<CocheDTO> listarCochesEnServicio() {
-        // Obtener todos los coches que están en servicio
         List<Coche> cochesEnServicio = cocheRepository.findByEnServicioTrue();
 
-        // Convertir cada coche a CocheDTO y devolver la lista
         return cochesEnServicio.stream()
-                .map(this::cocheACocheDTO)  // Solo convertimos el coche a CocheDTO
+                .map(this::cocheACocheDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public CocheDTO obtenerCocheEnServicioPorId(Integer cocheId) {
         if (cocheId == null) {
             throw new IllegalArgumentException("El ID del coche no puede ser nulo");

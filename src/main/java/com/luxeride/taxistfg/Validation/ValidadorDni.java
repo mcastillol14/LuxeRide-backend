@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidadorDni implements ConstraintValidator<DniValido, String> {
 
+    // letras de control oficiales del DNI español, el indice es numero % 23
     private static final String LETRAS_CONTROL = "TRWAGMYFPDXBNJZSQVHLCKE";
 
     @Override

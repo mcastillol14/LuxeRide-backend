@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,13 +44,16 @@ public class ServicioService {
     }
 
 
+    @Transactional(readOnly = true)
     public Page<Servicio> obtenerServiciosPage(String tipo, Pageable pageable) {
         if (tipo == null || tipo.trim().isEmpty()) {
             return servicioRepository.findAll(pageable);
         }
         return servicioRepository.buscarServiciosPorTipo(tipo, pageable);
     }
-     public List<Servicio> obtenerServicios(){
+
+    @Transactional(readOnly = true)
+    public List<Servicio> obtenerServicios(){
         return servicioRepository.findAll();
      }
 }

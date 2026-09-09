@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.luxeride.taxistfg.Repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -128,6 +128,7 @@ public class UsuarioService {
                 usuariosPage.getTotalElements()
         );
     }
+    @Transactional(readOnly = true)
     public Page<UsuarioDTO> obtenerUsuariosDTOPorFiltro(Pageable pageable, String dni) {
         Page<Usuario> usuariosPage;
         if (dni != null && !dni.isEmpty()) {
@@ -186,6 +187,7 @@ public class UsuarioService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Usuario> obtenerTaxistas() {
         return usuarioRepository.findByRol(Rol.ROL_TAXISTA);
     }

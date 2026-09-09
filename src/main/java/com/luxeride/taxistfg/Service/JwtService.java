@@ -40,6 +40,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
+                // 1000 * 60 * 60 * 168 = 168h = 7 dias de validez del token
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 168))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -58,6 +59,8 @@ public class JwtService {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            // token expirado, mal formado o con firma invalida, todo cuenta como invalido
+            // ojo: no dejar que esto se escape sin capturar, si no el filtro de auth tumba la request entera
             return false;
         }
     }

@@ -23,6 +23,7 @@ public AuthResponse login(LoginRequest request) {
     Usuario usuario = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+    // cuenta bloqueada por un admin (ver ControladorAdmin.bloquearCuenta), no dejamos loguear aunque la password sea correcta
     if (!usuario.isAccountNonLocked()) {
         throw new RuntimeException("Tu cuenta está bloqueada. Contacta con el soporte.");
     }
