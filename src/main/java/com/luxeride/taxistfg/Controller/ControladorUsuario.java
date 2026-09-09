@@ -128,6 +128,19 @@ public class ControladorUsuario {
     @GetMapping("/generarPDF/{idCliente}")
     public ResponseEntity<byte[]> generarPdfUltimoViaje(@PathVariable Integer idCliente) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean esAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ROL_ADMIN"));
+
+            if (!esAdmin) {
+                String email = (String) auth.getPrincipal();
+                Usuario usuarioAutenticado = usuarioRepository.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                if (!usuarioAutenticado.getId().equals(idCliente)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+            }
+
             // Obtener todos los viajes del cliente ordenados por ID descendente
             List<Viaje> viajes = viajeRepository.findViajesCliente(idCliente);
 
@@ -154,6 +167,8 @@ public class ControladorUsuario {
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

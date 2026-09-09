@@ -1,9 +1,11 @@
 package com.luxeride.taxistfg.Service;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.SignatureException;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "1a3b96e4f4b7c9e4a2b6c9a8d874e5fc293d54f4321ab58e4c2e1670f4a3cb45\n";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public String getToken(UserDetails user) {
         return getToken(new HashMap<>(), user);
@@ -44,7 +46,7 @@ public class JwtService {
     }
 
     private Key getKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -55,7 +57,7 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (SignatureException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
